@@ -18,27 +18,18 @@ class NewsPanel extends React.Component {
    * a point when no more news available on the screen
    */
   loadMoreNews() {
-    const mock_news = [{
-			'source':'The Wall Street Journal',
-			'title': 'Berkshire Hathaway Benefits From U.S. Tax Plan',
-			'description':'Warren Buffett has one man to thank for Berkshire Hathaway Inc.’s $29 billion windfall in 2017: President Donald Trump.',
-			'url':'https://www.wsj.com/articles/berkshire-hathaway-posted-29-billion-gain-in-2017-from-u-s-tax-plan-1519480047',
-			'urlToImage':'http://www.thecommonsenseshow.com/siteupload/2016/10/wsj.png',
-			'publishedAt':'2018-02-24T18:42:00Z',
-			'digest':'3RjuEom==\n',
-			'reason':'Recommend'
-		}, {
-			'source':'Fortune',
-			'title': 'Here is how much Bitcoin Elon Musk Owns',
-			'description':'Tesla CEO Elon Musk isn’t exactly active in cryptocurrency. Musk revealed this week on Twitter how much Bitcoin he owns—and it’s not much.',
-			'url':'http://fortune.com/2018/02/23/bitcoin-elon-musk-value/',
-			'urlToImage':'https://www.fortune.magazine.co.uk/files/7213/7882/9592/Fortune-magazine-cover6.jpg',
-			'publishedAt':'2018-02-23T18:42:00Z',
-			'digest':'3RjuEomTtul==\n',
-			'reason':'Recommend'
-		}];
+    /* the news_url is similar to the restful API URL */
+    const news_url = 'http://' + window.location.hostname + ':3000' + '/news';
+    const request = new Request(news_url, { method: 'GET' });
 
-    this.setState({ news: mock_news });
+    fetch(request)
+      .then(res => res.json())
+      .then(fetched_news_list => {
+        this.setState({ news: this.state.news 
+          ? this.state.news.concat(fetched_news_list) : fetched_news_list });
+      }, err => {
+        console.log(`couldn\'t fetch the news list, error message:${err}`);
+      });
   }
 
   /**
