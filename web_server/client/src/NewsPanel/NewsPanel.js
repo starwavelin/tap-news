@@ -1,5 +1,6 @@
 import './NewsPanel.css';
 import NewsCard from '../NewsCard/NewsCard';
+import _ from 'lodash';
 
 import React from 'react';
 
@@ -11,6 +12,19 @@ class NewsPanel extends React.Component {
 
   componentDidMount() {
     this.loadMoreNews();
+    this.loadMoreNews = _.debounce(this.loadMoreNews, 1000); //debounce wraps a function
+    window.addEventListener('scroll', () => this.handleScroll());
+  }
+
+  /** 
+   * invoke loadMoreNews when user scrolls to the end
+  */
+  handleScroll() {
+    let scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+    if (window.innerHeight + scrollY >= document.body.offsetHeight - 50) {
+      console.log('handleScroll');
+      this.loadMoreNews();
+    }
   }
 
   /** 
@@ -18,6 +32,8 @@ class NewsPanel extends React.Component {
    * a point when no more news available on the screen
    */
   loadMoreNews() {
+    console.log('Load More News');
+
     /* the news_url is similar to the restful API URL */
     const news_url = 'http://' + window.location.hostname + ':3000' + '/news';
     const request = new Request(news_url, { method: 'GET' });
